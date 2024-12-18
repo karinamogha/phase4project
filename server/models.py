@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
+from sqlalchemy import MetaData, CheckConstraint
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 
@@ -25,6 +25,11 @@ class User(db.Model, SerializerMixin):
     )
 
     serialize_rules = ("-expenses.user",)
+
+    # Add a constraint to limit the username length to 50 characters
+    __table_args__ = (
+        CheckConstraint("LENGTH(username) <= 50", name="username_length_check"),
+    )
 
     def __repr__(self):
         return f"<User {self.username}>"
