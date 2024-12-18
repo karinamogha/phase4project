@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-# Standard library imports
-
-# Remote library imports
+Standard library imports
+Remote library imports
 from flask import jsonify
 from flask_restful import Resource
 from config import app, api
 
-# Placeholder Resources
+Placeholder Resources
 class UserList(Resource):
     def get(self):
         # Placeholder user data
@@ -49,14 +48,13 @@ class CategoryList(Resource):
                 {"id": 2, "name": "Groceries"},
             ]
         }
-
 class CategoryDetail(Resource):
     def get(self, id):
         # Placeholder for fetching a single category
         # Replace this with a query to fetch category from the database later
         return {"id": id, "name": "Rent"}
 
-# Error Handlers
+Error Handlers
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({"error": "Resource not found"}), 404
@@ -65,7 +63,7 @@ def not_found(error):
 def internal_server_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
-# Add resources to the API
+Add resources to the API
 api.add_resource(UserList, '/users')
 api.add_resource(UserDetail, '/users/<int:id>')
 api.add_resource(ExpenseList, '/expenses')
@@ -73,11 +71,10 @@ api.add_resource(ExpenseDetail, '/expenses/<int:id>')
 api.add_resource(CategoryList, '/categories')
 api.add_resource(CategoryDetail, '/categories/<int:id>')
 
-# Default route
+Default route
 @app.route('/')
 def index():
     return '<h1>Project Server</h1>'
 
-if __name__ == '__main__':
+if name == 'main':
     app.run(port=5555, debug=True)
-    
