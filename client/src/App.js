@@ -1,3 +1,6 @@
+App.js
+
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from "react";
 import { Switch, Route } from "react-router-dom";
 
