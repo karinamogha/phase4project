@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import Login from "./Login";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import ExpenseForm from "./components/ExpenseForm";
-import Navbar from "./Navbar";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
@@ -20,4 +20,3 @@ function App() {
 }
 
 export default App;
-

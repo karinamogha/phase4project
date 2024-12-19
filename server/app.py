@@ -3,12 +3,16 @@
 # Standard library imports
 
 # Remote library imports
-from flask import jsonify, request, session
-from flask_restful import Resource
-from config import app, api
+from flask import Flask, jsonify, request, session
+from flask_restful import Resource, Api
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
+
+# Local imports
+from config import app, api
 
 bcrypt = Bcrypt(app)
+CORS(app)
 
 # Placeholder Resources
 class UserList(Resource):
@@ -24,7 +28,6 @@ class UserList(Resource):
 class UserDetail(Resource):
     def get(self, id):
         # Placeholder for fetching a single user
-        # Replace this with a query to fetch user from the database later
         return {"id": id, "username": "john_doe", "email": "john@example.com"}
 
 class ExpenseList(Resource):
@@ -40,7 +43,6 @@ class ExpenseList(Resource):
 class ExpenseDetail(Resource):
     def get(self, id):
         # Placeholder for fetching a single expense
-        # Replace this with a query to fetch expense from the database later
         return {"id": id, "description": "Rent", "amount": 1200.0, "date": "2024-12-01", "user_id": 1, "category_id": 1}
 
 class CategoryList(Resource):
@@ -52,10 +54,10 @@ class CategoryList(Resource):
                 {"id": 2, "name": "Groceries"},
             ]
         }
+
 class CategoryDetail(Resource):
     def get(self, id):
         # Placeholder for fetching a single category
-        # Replace this with a query to fetch category from the database later
         return {"id": id, "name": "Rent"}
 
 # Login route
@@ -64,11 +66,10 @@ def login():
     data = request.get_json()
 
     # Placeholder for user validation
-    # Replace with actual database query
-    if data['email'] == "john@example.com" and bcrypt.check_password_hash(
-        bcrypt.generate_password_hash("password123"), data['password']
-    ):
-        session['user_id'] = 1
+    user = {"email": "john@example.com", "password": bcrypt.generate_password_hash("password123").decode("utf-8")}
+
+    if data['email'] == user['email'] and bcrypt.check_password_hash(user['password'], data['password']):
+        session['user_id'] = 1  # Replace with actual user ID from database
         session['user_email'] = data['email']
         return jsonify({"message": "Login successful", "user_id": 1})
     
@@ -104,3 +105,4 @@ def index():
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
+    
