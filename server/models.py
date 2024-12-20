@@ -1,53 +1,40 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, CheckConstraint
+from server.config import db
+from sqlalchemy import CheckConstraint, Table
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
 
-# Configure metadata
-metadata = MetaData(
-    naming_convention={
-        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    }
+# Association Table
+expense_category_association = Table(
+    "expense_category_association",
+    db.Model.metadata,
+    db.Column("expense_id", db.Integer, db.ForeignKey("expenses.id"), primary_key=True),
+    db.Column("category_id", db.Integer, db.ForeignKey("categories.id"), primary_key=True),
 )
-
-db = SQLAlchemy(metadata=metadata)
-
 
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
-
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
-
-    expenses = db.relationship(
-        "Expense", back_populates="user", cascade="all, delete-orphan"
-    )
+    expenses = db.relationship("Expense", back_populates="user", cascade="all, delete-orphan")
 
     serialize_rules = ("-expenses.user",)
-
-    # Add a constraint to limit the username length to 50 characters
-    __table_args__ = (
-        CheckConstraint("LENGTH(username) <= 50", name="username_length_check"),
-    )
 
     def __repr__(self):
         return f"<User {self.username}>"
 
-
 class Category(db.Model, SerializerMixin):
     __tablename__ = "categories"
-
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
+    expenses = db.relationship(
+        "Expense", secondary=expense_category_association, back_populates="categories"
+    )
 
-    expenses = db.relationship("Expense", back_populates="category")
-
-    serialize_rules = ("-expenses.category",)
+    serialize_rules = ("-expenses.categories",)
 
     def __repr__(self):
         return f"<Category {self.name}>"
-
 
 class Expense(db.Model, SerializerMixin):
     __tablename__ = "expenses"
@@ -57,12 +44,13 @@ class Expense(db.Model, SerializerMixin):
     amount = db.Column(db.Float, nullable=False)
     date = db.Column(db.Date, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey("categories.id"), nullable=True)
 
     user = db.relationship("User", back_populates="expenses")
-    category = db.relationship("Category", back_populates="expenses")
+    categories = db.relationship(
+        "Category", secondary=expense_category_association, back_populates="expenses"
+    )
 
-    serialize_rules = ("-user.expenses", "-category.expenses",)
+    serialize_rules = ("-user.expenses", "-categories.expenses")
 
     @validates("amount")
     def validate_amount(self, key, value):
