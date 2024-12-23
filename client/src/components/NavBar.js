@@ -6,13 +6,16 @@ function Navbar() {
     <nav>
       <ul>
         <li>
-          <Link to="/">Login</Link>
+          <Link to="/">Auth</Link>
         </li>
         <li>
           <Link to="/dashboard">Dashboard</Link>
         </li>
         <li>
           <Link to="/expenses">Expenses</Link>
+        </li>
+        <li>
+          <Link to="/categories">Categories</Link>
         </li>
       </ul>
     </nav>
