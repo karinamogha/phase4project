@@ -1,21 +1,30 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AuthPage from "./components/AuthPage";
+import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
 import ExpenseForm from "./components/ExpenseForm";
 import Navbar from "./components/Navbar";
-import CategoriesPage from "./components/CategoriesPage";
 
 function App() {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<AuthPage />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/expenses" element={<ExpenseForm />} />
-        <Route path="/categories" element={<CategoriesPage />} />
-      </Routes>
+      <div className="app-container">
+        <Navbar />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div className="main-page">
+                <h1 className="main-title">Budget Buddy</h1>
+              </div>
+            }
+          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/expenses" element={<ExpenseForm />} />
+        </Routes>
+      </div>
     </Router>
   );
 }
