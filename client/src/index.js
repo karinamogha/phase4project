@@ -1,9 +1,25 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
-import App from "./App"; // App.js is correctly located in the src/ directory
-import "./index.css"; // Include any global CSS styles
+import ReactDOM from "react-dom";
+import "./index.css"; 
+import App from "./App";
 
-const container = document.getElementById("root");
-const root = createRoot(container);
+ReactDOM.render(
+<React.StrictMode>
+    <App />
+</React.StrictMode>,
+document.getElementById("root")
+);
 
-root.render(<App />);
+<div
+style={{
+    textAlign: "center",
+    margin: "50px",
+    padding: "20px",
+    backgroundColor: "#002b5c", 
+    borderRadius: "8px",
+}}
+>
+<h1>Budget Buddy</h1>
+  {/* Rest of the AuthPage content */}
+</div>
+

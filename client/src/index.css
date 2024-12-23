@@ -1,7 +1,58 @@
-:root {
-  --bg: #282c34;
-  --header: #fff;
-  --link: #61dafb;
-  --text: hsla(0, 0%, 100%, 0.88);
+/* App Container */
+.app-container {
+  display: flex;
 }
 
+/* Main Page Styles */
+.main-page {
+  flex: 1; /* Take up the remaining space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  background-color: #001f3f; /* Dark blue background */
+  color: white; /* White text */
+}
+
+.main-title {
+  font-size: 4rem; /* Large title */
+  font-weight: bold;
+  margin: 0;
+  position: absolute;
+  top: 10%; /* Position at the top */
+  text-align: center;
+  width: 100%;
+}
+
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  flex-direction: column; /* Stack items vertically */
+  background-color: #011627; /* Slightly darker blue */
+  padding: 20px;
+  height: 100vh; /* Full height navigation */
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+}
+
+.nav-links {
+  list-style: none; /* Remove bullet points */
+  padding: 0;
+  margin: 0;
+}
+
+.nav-link {
+  display: block; /* Make the links behave like buttons */
+  text-decoration: none; /* Remove underline */
+  color: white; /* White text */
+  background-color: #0074d9; /* Blue button background */
+  padding: 10px 15px;
+  margin-bottom: 10px; /* Space between buttons */
+  border-radius: 5px; /* Rounded edges */
+  text-align: center; /* Center text */
+  transition: background-color 0.3s, color 0.3s; /* Smooth hover effect */
+}
+
+.nav-link:hover {
+  background-color: white; /* Hover effect */
+  color: #0074d9; /* Text color on hover */
+}
