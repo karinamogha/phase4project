@@ -82,3 +82,60 @@
   width: 100%;
   margin-bottom: 20px; /* Space between title and description */
 }
+.button-primary {
+  padding: 10px 20px;
+  background-color: #0074d9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.button-primary:hover {
+  background-color: #005bb5;
+  transform: scale(1.05);
+}
+.card {
+  background-color: #011627;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin: 20px 0;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  color: #f4f4f4;
+}
+.input-field {
+  padding: 10px;
+  width: 100%;
+  border: 1px solid #0074d9;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #005bb5;
+  box-shadow: 0 0 5px rgba(0, 116, 217, 0.5);
+}
+.footer {
+  text-align: center;
+  padding: 10px;
+  background-color: #011627;
+  color: #f4f4f4;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+
+.footer a {
+  color: #0074d9;
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
