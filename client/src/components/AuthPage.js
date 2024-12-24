@@ -27,6 +27,9 @@ function AuthPage() {
   return (
     <div className="auth-container">
       <h1 className="auth-title">Budget Buddy</h1>
+      <p className="auth-description">
+        Budget Buddy is a personal finance management app designed to help you track expenses, manage your budget, and gain insights into your spending habits. Whether you're saving for a goal or just trying to stay on top of your finances, Budget Buddy makes budgeting simple and effective.
+      </p>
       <h2 className="auth-subtitle">{isLogin ? "Login" : "Register"}</h2>
       <form onSubmit={handleSubmit} className="auth-form">
         <input

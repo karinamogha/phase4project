@@ -56,3 +56,29 @@
   background-color: white; /* Hover effect */
   color: #0074d9; /* Text color on hover */
 }
+/* Add space between elements to ensure the description is not hidden */
+.auth-container {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Add padding to the description */
+.auth-description {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #f4f4f4;
+}
+
+/* Ensure title does not overlap */
+.auth-title {
+  font-size: 4rem; /* Large title */
+  font-weight: bold;
+  margin: 0;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 20px; /* Space between title and description */
+}
