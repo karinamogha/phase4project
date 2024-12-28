@@ -8,11 +8,22 @@ from faker import Faker
 
 # Local imports
 from app import app
-from models import db, User, Category, Expense
+from config import db  # Use the same `db` instance from `config.py`
+from models import User, Category, Expense
 
 if __name__ == '__main__':
-    fake = Faker()
-    with app.app_context():
+    # Debug: Print the database URI and test the connection
+    # print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
+    
+    # with app.app_context():
+    #     try:
+    #         db.engine.connect()
+    #         print("Database connection successful.")
+    #     except Exception as e:
+    #         print("Error connecting to database:", e)
+    #         exit(1)  # Exit early if the database connection fails
+
+        fake = Faker()
         print("Starting seed...")
 
         # Clear existing data (optional, can be used to reset the DB)
@@ -28,7 +39,7 @@ if __name__ == '__main__':
         for _ in range(10):  # Adjust the range for how many users you want to create
             user = User(
                 username=fake.user_name(),
-                email=fake.email(),
+                email=fake.email(),  # Added email field
                 password=fake.password()
             )
             users.append(user)
@@ -38,7 +49,8 @@ if __name__ == '__main__':
 
         # Seed Categories
         categories = [
-            "Food", "Rent", "Travel", "Entertainment", "Utilities", "Healthcare", "Education", "Miscellaneous"
+            "Food", "Rent", "Travel", "Entertainment", "Utilities",
+            "Healthcare", "Education", "Miscellaneous"
         ]
         category_objects = [Category(name=category) for category in categories]
         db.session.bulk_save_objects(category_objects)
@@ -49,7 +61,7 @@ if __name__ == '__main__':
         expenses = []
         for _ in range(50):  # Adjust the range for how many expenses you want to create
             expense = Expense(
-                description=fake.sentence(),
+                name=fake.sentence(),
                 amount=round(randint(5, 500) * 0.5, 2),  # Random amounts between $5 and $500
                 date=fake.date_this_year(),
                 category_id=rc(category_objects).id,
@@ -61,4 +73,4 @@ if __name__ == '__main__':
         print(f"Seeded {len(expenses)} expenses.")
 
         print("Seeding complete.")
-
+        

@@ -9,86 +9,134 @@ from flask_bcrypt import Bcrypt
 from flask_cors import CORS
 
 # Local imports
-from config import app, api
+from config import app, api, db
+from models import User, Category, Expense
 
 bcrypt = Bcrypt(app)
 CORS(app)
 
-# Placeholder Resources
+# Resources
 class UserList(Resource):
     def get(self):
-        # Placeholder user data
-        return {
-            "users": [
-                {"id": 1, "username": "john_doe", "email": "john@example.com"},
-                {"id": 2, "username": "jane_smith", "email": "jane@example.com"},
-            ]
-        }
+        users = User.query.all()
+        return [user.to_dict() for user in users], 200
+
+    def post(self):
+        data = request.get_json()
+        username = data.get("username")
+        password = data.get("password")
+
+        if not username or not password:
+            return {"error": "Username and password are required"}, 400
+
+        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        new_user = User(username=username, password=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        return new_user.to_dict(), 201
+
 
 class UserDetail(Resource):
     def get(self, id):
-        # Placeholder for fetching a single user
-        return {"id": id, "username": "john_doe", "email": "john@example.com"}
+        user = User.query.get(id)
+        if not user:
+            return {"error": "User not found"}, 404
+        return user.to_dict(), 200
+
 
 class ExpenseList(Resource):
     def get(self):
-        # Placeholder expense data
-        return {
-            "expenses": [
-                {"id": 1, "description": "Rent", "amount": 1200.0, "date": "2024-12-01", "user_id": 1, "category_id": 1},
-                {"id": 2, "description": "Groceries", "amount": 150.0, "date": "2024-12-02", "user_id": 2, "category_id": 2},
-            ]
-        }
+        expenses = Expense.query.all()
+        return [expense.to_dict() for expense in expenses], 200
+
+    def post(self):
+        data = request.get_json()
+        name = data.get("name")
+        amount = data.get("amount")
+        date = data.get("date")
+        user_id = data.get("user_id")
+        category_id = data.get("category_id")
+
+        if not name or not amount or not date or not user_id:
+            return {"error": "Name, amount, date, and user_id are required"}, 400
+
+        new_expense = Expense(
+            name=name,
+            amount=amount,
+            date=date,
+            user_id=user_id,
+            category_id=category_id,
+        )
+        db.session.add(new_expense)
+        db.session.commit()
+        return new_expense.to_dict(), 201
+
 
 class ExpenseDetail(Resource):
     def get(self, id):
-        # Placeholder for fetching a single expense
-        return {"id": id, "description": "Rent", "amount": 1200.0, "date": "2024-12-01", "user_id": 1, "category_id": 1}
+        expense = Expense.query.get(id)
+        if not expense:
+            return {"error": "Expense not found"}, 404
+        return expense.to_dict(), 200
+
 
 class CategoryList(Resource):
     def get(self):
-        # Placeholder category data
-        return {
-            "categories": [
-                {"id": 1, "name": "Rent"},
-                {"id": 2, "name": "Groceries"},
-            ]
-        }
+        categories = Category.query.all()
+        return [category.to_dict() for category in categories], 200
+
+    def post(self):
+        data = request.get_json()
+        name = data.get("name")
+
+        if not name:
+            return {"error": "Category name is required"}, 400
+
+        new_category = Category(name=name)
+        db.session.add(new_category)
+        db.session.commit()
+        return new_category.to_dict(), 201
+
 
 class CategoryDetail(Resource):
     def get(self, id):
-        # Placeholder for fetching a single category
-        return {"id": id, "name": "Rent"}
+        category = Category.query.get(id)
+        if not category:
+            return {"error": "Category not found"}, 404
+        return category.to_dict(), 200
+
 
 # Login route
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
 
-    # Placeholder for user validation
-    user = {"email": "john@example.com", "password": bcrypt.generate_password_hash("password123").decode("utf-8")}
+    user = User.query.filter_by(username=data.get("username")).first()
+    if user and bcrypt.check_password_hash(user.password, data.get("password")):
+        session["user_id"] = user.id
+        session["username"] = user.username
+        return jsonify({"message": "Login successful", "user_id": user.id}), 200
 
-    if data['email'] == user['email'] and bcrypt.check_password_hash(user['password'], data['password']):
-        session['user_id'] = 1  # Replace with actual user ID from database
-        session['user_email'] = data['email']
-        return jsonify({"message": "Login successful", "user_id": 1})
-    
     return jsonify({"error": "Invalid credentials"}), 401
+
 
 # Logout route
 @app.route('/logout', methods=['POST'])
 def logout():
-    session.clear()  # Clear all session data
+    session.clear()
     return jsonify({"message": "Logout successful"})
+
 
 # Error Handlers
 @app.errorhandler(404)
 def not_found(error):
     return jsonify({"error": "Resource not found"}), 404
 
+
 @app.errorhandler(500)
 def internal_server_error(error):
     return jsonify({"error": "Internal server error"}), 500
+
 
 # Add resources to the API
 api.add_resource(UserList, '/users')
@@ -102,6 +150,7 @@ api.add_resource(CategoryDetail, '/categories/<int:id>')
 @app.route('/')
 def index():
     return '<h1>Project Server</h1>'
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

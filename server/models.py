@@ -1,23 +1,14 @@
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData, CheckConstraint
+from sqlalchemy import CheckConstraint
 from sqlalchemy.orm import validates
 from sqlalchemy_serializer import SerializerMixin
-
-# Configure metadata
-metadata = MetaData(
-    naming_convention={
-        "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
-    }
-)
-
-db = SQLAlchemy(metadata=metadata)
-
+from config import db  # Import the single `db` instance from `config.py`
 
 class User(db.Model, SerializerMixin):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False, unique=True)
+    email = db.Column(db.String, nullable=False, unique=True)  # Added email field
     password = db.Column(db.String, nullable=False)
 
     expenses = db.relationship(
@@ -32,7 +23,19 @@ class User(db.Model, SerializerMixin):
     )
 
     def __repr__(self):
-        return f"<User {self.username}>"
+        return f"<User {self.username}, {self.email}>"
+
+    @validates("email")
+    def validate_email(self, key, value):
+        if "@" not in value or "." not in value:
+            raise ValueError("Invalid email format")
+        return value
+
+    @validates("username")
+    def validate_username(self, key, value):
+        if len(value) > 50:
+            raise ValueError("Username must be 50 characters or fewer")
+        return value
 
 
 class Category(db.Model, SerializerMixin):
@@ -78,3 +81,4 @@ class Expense(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f"<Expense {self.name}, ${self.amount}, {self.date}>"
+    
