@@ -1,25 +1,11 @@
 import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css"; 
+import ReactDOM from "react-dom/client"; // Import the new ReactDOM API
+import "./index.css";
 import App from "./App";
 
-ReactDOM.render(
-<React.StrictMode>
+const root = ReactDOM.createRoot(document.getElementById("root")); // Create the root element
+root.render(
+  <React.StrictMode>
     <App />
-</React.StrictMode>,
-document.getElementById("root")
+  </React.StrictMode>
 );
-
-<div
-style={{
-    textAlign: "center",
-    margin: "50px",
-    padding: "20px",
-    backgroundColor: "#002b5c", 
-    borderRadius: "8px",
-}}
->
-<h1>Budget Buddy</h1>
-  {/* Rest of the AuthPage content */}
-</div>
-

@@ -14,7 +14,7 @@ from models import User, Category, Expense
 
 # Initialize extensions
 bcrypt = Bcrypt(app)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # Resources
 class UserList(Resource):
@@ -52,19 +52,28 @@ class UserDetail(Resource):
 
 class ExpenseList(Resource):
     def get(self):
-        expenses = Expense.query.all()
+        # Check if the user is logged in
+        if "user_id" not in session:
+            return {"error": "Unauthorized"}, 401
+
+        # Fetch expenses only for the logged-in user
+        user_id = session["user_id"]
+        expenses = Expense.query.filter_by(user_id=user_id).all()
         return [expense.to_dict() for expense in expenses], 200
 
     def post(self):
+        user_id = session.get("user_id")  # Ensure the user is logged in
+        if not user_id:
+            return {"error": "Unauthorized. Please log in."}, 401
+
         data = request.get_json()
         name = data.get("name")
         amount = data.get("amount")
         date = data.get("date")
-        user_id = data.get("user_id")
         category_id = data.get("category_id")
 
-        if not name or not amount or not date or not user_id:
-            return {"error": "Name, amount, date, and user_id are required"}, 400
+        if not name or not amount or not date:
+            return {"error": "Name, amount, and date are required"}, 400
 
         new_expense = Expense(
             name=name,
@@ -80,9 +89,15 @@ class ExpenseList(Resource):
 
 class ExpenseDetail(Resource):
     def get(self, id):
-        expense = Expense.query.get(id)
+        # Ensure user is logged in
+        user_id = session.get("user_id")
+        if not user_id:
+            return {"error": "Unauthorized. Please log in."}, 401
+
+        # Fetch the expense and ensure it belongs to the user
+        expense = Expense.query.filter_by(id=id, user_id=user_id).first()
         if not expense:
-            return {"error": "Expense not found"}, 404
+            return {"error": "Expense not found or unauthorized access"}, 404
         return expense.to_dict(), 200
 
 
@@ -184,4 +199,3 @@ def index():
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
-    
