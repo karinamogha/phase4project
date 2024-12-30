@@ -12,26 +12,14 @@ from config import db  # Use the same `db` instance from `config.py`
 from models import User, Category, Expense
 
 if __name__ == '__main__':
-    # Debug: Print the database URI and test the connection
-    # print("Database URI:", app.config['SQLALCHEMY_DATABASE_URI'])
-    
-    # with app.app_context():
-    #     try:
-    #         db.engine.connect()
-    #         print("Database connection successful.")
-    #     except Exception as e:
-    #         print("Error connecting to database:", e)
-    #         exit(1)  # Exit early if the database connection fails
+    fake = Faker()
+    print("Starting seed...")
 
-        fake = Faker()
-        print("Starting seed...")
-
+    with app.app_context():
         # Clear existing data (optional, can be used to reset the DB)
         db.session.query(Expense).delete()
         db.session.query(Category).delete()
         db.session.query(User).delete()
-
-        # Commit the deletions (if resetting the DB)
         db.session.commit()
 
         # Seed Users
@@ -39,11 +27,11 @@ if __name__ == '__main__':
         for _ in range(10):  # Adjust the range for how many users you want to create
             user = User(
                 username=fake.user_name(),
-                email=fake.email(),  # Added email field
+                email=fake.email(),
                 password=fake.password()
             )
-            users.append(user)
-        db.session.bulk_save_objects(users)
+            db.session.add(user)
+            users.append(user)  # Add user to the list for later reference
         db.session.commit()
         print(f"Seeded {len(users)} users.")
 
@@ -52,10 +40,13 @@ if __name__ == '__main__':
             "Food", "Rent", "Travel", "Entertainment", "Utilities",
             "Healthcare", "Education", "Miscellaneous"
         ]
-        category_objects = [Category(name=category) for category in categories]
-        db.session.bulk_save_objects(category_objects)
+        category_objects = []
+        for category in categories:
+            category_obj = Category(name=category)
+            db.session.add(category_obj)
+            category_objects.append(category_obj)  # Add category to the list
         db.session.commit()
-        print(f"Seeded {len(categories)} categories.")
+        print(f"Seeded {len(category_objects)} categories.")
 
         # Seed Expenses
         expenses = []
@@ -64,13 +55,13 @@ if __name__ == '__main__':
                 name=fake.sentence(),
                 amount=round(randint(5, 500) * 0.5, 2),  # Random amounts between $5 and $500
                 date=fake.date_this_year(),
-                category_id=rc(category_objects).id,
-                user_id=rc(users).id
+                category_id=rc(category_objects).id,  # Assign valid category_id
+                user_id=rc(users).id  # Assign valid user_id
             )
             expenses.append(expense)
         db.session.bulk_save_objects(expenses)
         db.session.commit()
         print(f"Seeded {len(expenses)} expenses.")
 
-        print("Seeding complete.")
-        
+    print("Seeding complete.")
+    

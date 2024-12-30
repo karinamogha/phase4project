@@ -1,7 +1,7 @@
 # Standard library imports
 import os
-if not os.path.exists("instance"):
-    os.makedirs("instance")
+if not os.path.exists("server/instance"):
+    os.makedirs("server/instance")
 
 # Remote library imports
 from flask import Flask
