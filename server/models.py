@@ -15,7 +15,8 @@ class User(db.Model, SerializerMixin):
         "Expense", back_populates="user", cascade="all, delete-orphan"
     )
 
-    serialize_rules = ("-expenses.user",)
+    # Exclude password and expenses from serialization
+    serialize_rules = ("-password", "-expenses.user")
 
     # Add a constraint to limit the username length to 50 characters
     __table_args__ = (
@@ -46,6 +47,7 @@ class Category(db.Model, SerializerMixin):
 
     expenses = db.relationship("Expense", back_populates="category")
 
+    # Exclude related expenses from serialization
     serialize_rules = ("-expenses.category",)
 
     def __repr__(self):
@@ -65,7 +67,8 @@ class Expense(db.Model, SerializerMixin):
     user = db.relationship("User", back_populates="expenses")
     category = db.relationship("Category", back_populates="expenses")
 
-    serialize_rules = ("-user.expenses", "-category.expenses",)
+    # Exclude user and category details from serialized output
+    serialize_rules = ("-user.expenses", "-category.expenses")
 
     @validates("amount")
     def validate_amount(self, key, value):

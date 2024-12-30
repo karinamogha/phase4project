@@ -12,6 +12,7 @@ from flask_cors import CORS
 from config import app, api, db
 from models import User, Category, Expense
 
+# Initialize extensions
 bcrypt = Bcrypt(app)
 CORS(app)
 
@@ -24,13 +25,18 @@ class UserList(Resource):
     def post(self):
         data = request.get_json()
         username = data.get("username")
+        email = data.get("email")
         password = data.get("password")
 
-        if not username or not password:
-            return {"error": "Username and password are required"}, 400
+        if not username or not email or not password:
+            return {"error": "Username, email, and password are required"}, 400
+
+        # Check if username or email already exists
+        if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
+            return {"error": "Username or email already exists"}, 400
 
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
-        new_user = User(username=username, password=hashed_password)
+        new_user = User(username=username, email=email, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()
         return new_user.to_dict(), 201
@@ -92,6 +98,9 @@ class CategoryList(Resource):
         if not name:
             return {"error": "Category name is required"}, 400
 
+        if Category.query.filter_by(name=name).first():
+            return {"error": "Category already exists"}, 400
+
         new_category = Category(name=name)
         db.session.add(new_category)
         db.session.commit()
@@ -104,6 +113,27 @@ class CategoryDetail(Resource):
         if not category:
             return {"error": "Category not found"}, 404
         return category.to_dict(), 200
+
+
+# Register route
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    username = data.get("username")
+    email = data.get("email")
+    password = data.get("password")
+
+    if not username or not email or not password:
+        return jsonify({"error": "Username, email, and password are required"}), 400
+
+    if User.query.filter_by(username=username).first() or User.query.filter_by(email=email).first():
+        return jsonify({"error": "Username or email already exists"}), 400
+
+    hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+    new_user = User(username=username, email=email, password=hashed_password)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({"message": "User registered successfully", "user": new_user.to_dict()}), 201
 
 
 # Login route
